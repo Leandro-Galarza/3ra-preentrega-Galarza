@@ -1,4 +1,5 @@
-let inCartProducts = JSON.parse(localStorage.getItem("in-cart-products"));
+let inCartProducts = localStorage.getItem("in-cart-products")
+inCartProducts = JSON.parse(inCartProducts);
 
 
 /*CONST*/
@@ -16,7 +17,8 @@ const buyButn = document.querySelector("#cart-actions-buy");
 /*LOAD PRODUCTS FUNCTION*/
 
 function loadCartProducts (){
-    if (inCartProducts) {
+    if (inCartProducts && inCartProducts.length > 0) {
+        
         emptyCartContainer.classList.add("disabled");
         cartProductsContainer.classList.remove("disabled");
         cartActionsContainer.classList.remove("disabled");
@@ -27,11 +29,11 @@ function loadCartProducts (){
         inCartProducts.forEach(product => {
     
             const div = document.createElement("div");
-            div.classList.add("carrito-producto")
+            div.classList.add("cart-products")
             div.innerHTML = `
             <img class="image-cart-product" src="${product.image}" alt="${product.title} " />
             <div class="cart-product-name">
-              <small>titulo</small>
+              <small>title</small>
               <h3>${product.title} </h3>
             </div>
             <div class="cart-product-quantity">
@@ -80,6 +82,22 @@ function removeButnsRefresh (){
 /*REMOVE FROM CART FUNCTION*/
 
 function removeFromCart (e){
+    Toastify({
+        text: "Removed From Cart",
+        duration: 3000,
+        close: true,
+        gravity: "top", // `top` or `bottom`
+        position: "right", // `left`, `center` or `right`
+        stopOnFocus: true, // Prevents dismissing of toast on hover
+        style: {
+          background: "linear-gradient(to right, rgb(255, 0, 170), rgb(0, 38, 207)",
+        },
+        offset: {
+            x: '1.5rem', 
+            y: '1.5rem'
+          },
+        onClick: function(){} // Callback after click
+      }).showToast();
     const butnId = e.currentTarget.id;
     const index = inCartProducts.findIndex(product => product.id === butnId);
 
@@ -96,9 +114,24 @@ function removeFromCart (e){
 clearButn.addEventListener("click", clearCart);
 
 function clearCart  (){
-    inCartProducts.lengt = 0;
-    localStorage.setItem("in-cart-products",JSON.stringify(inCartProducts));
-    loadCartProducts(); 
+
+    Swal.fire({
+        title: 'ARE YOU SURE?',
+        icon: 'question',
+        html: 'ALL YOUR ITEMS WILL BE REMOVED FROM YOUR CART',
+        showCancelButton: true,
+        focusConfirm: false,
+        confirmButtonText:'YES!',
+        cancelButtonText:'NOPE',
+      }).then((result) => {
+        if (result.isConfirmed) {    
+            inCartProducts.length = 0;
+            localStorage.setItem("in-cart-products",JSON.stringify(inCartProducts));
+            loadCartProducts(); 
+        } 
+      })
+
+
 }
 
 /*PURCHASE'S TOTAL AMOUNT FUNCTION*/
@@ -113,9 +146,12 @@ buyButn.addEventListener("click", buyCart);
 
 /*BUY BUTON FUNCION*/
 
-function buyCart  (){
-    inCartProducts.lengt = 0;
-    localStorage.setItem("in-cart-products",JSON.stringify(inCartProducts));
+function buyCart(){
+
+    
+
+    inCartProducts.length = 0;
+    localStorage.setItem("in-cart-products", JSON.stringify(inCartProducts));
 
 
     emptyCartContainer.classList.add("disabled");
